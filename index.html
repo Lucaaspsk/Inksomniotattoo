@@ -47,6 +47,48 @@ section{max-width:1180px;margin:auto;padding:86px 20px} .section-head{display:fl
 @media(max-width:900px){.piercing-gallery{grid-template-columns:repeat(2,1fr)}}
 @media(max-width:560px){.piercing-gallery{grid-template-columns:repeat(2,1fr);gap:9px}.piercing-card{border-radius:14px}}
 .piercing-card{overflow:hidden;} .piercing-card img{width:100%;height:100%;object-fit:cover;display:block;} @media(max-width:800px){.service-details{grid-template-columns:1fr}.tattoo-preview{height:280px}}
+
+.float-whatsapp{
+  position:fixed;
+  right:22px;
+  bottom:92px;
+  z-index:13;
+  width:58px;
+  height:58px;
+  border-radius:50%;
+  display:grid;
+  place-items:center;
+  background:#25D366;
+  color:#fff;
+  text-decoration:none;
+  font-size:30px;
+  font-weight:900;
+  box-shadow:0 18px 42px #000;
+  transition:transform .2s ease,box-shadow .2s ease,opacity .2s ease;
+}
+.float-whatsapp:hover{
+  transform:scale(1.08);
+  box-shadow:0 20px 48px #000;
+}
+
+
+.contact-choice{position:fixed;inset:0;z-index:30;display:none;align-items:center;justify-content:center;padding:20px}
+.contact-choice.show{display:flex}
+.contact-choice-backdrop{position:absolute;inset:0;background:rgba(0,0,0,.78);backdrop-filter:blur(7px)}
+.contact-choice-card{position:relative;width:min(430px,100%);background:linear-gradient(145deg,#171717,#0c0c0c);border:1px solid rgba(216,166,45,.45);border-radius:24px;padding:32px;box-shadow:0 30px 90px rgba(0,0,0,.75);text-align:center}
+.contact-choice-close{position:absolute;right:14px;top:10px;width:38px;height:38px;border:0;background:transparent;color:#aaa;font-size:30px;cursor:pointer}
+.contact-choice-eyebrow{font-size:11px;letter-spacing:3px;color:#d8a62d;margin-bottom:10px}
+.contact-choice-card h3{margin:0 0 8px;font-size:28px}
+.contact-choice-card p{margin:0 0 22px;color:#aaa}
+.contact-choice-actions{display:grid;gap:12px}
+.contact-option{display:flex;align-items:center;gap:14px;text-align:left;padding:15px 17px;border-radius:16px;text-decoration:none;border:1px solid rgba(255,255,255,.10);transition:transform .2s ease,border-color .2s ease,background .2s ease}
+.contact-option:hover{transform:translateY(-2px);border-color:rgba(216,166,45,.55);background:rgba(255,255,255,.04)}
+.contact-option-icon{width:45px;height:45px;border-radius:50%;display:grid;place-items:center;font-size:25px;font-weight:900;flex:none}
+.contact-option.whatsapp .contact-option-icon{background:#25D366;color:#fff}
+.contact-option.instagram .contact-option-icon{background:linear-gradient(135deg,#d8a62d,#f0d27a);color:#111}
+.contact-option strong{display:block;color:#fff;font-size:16px}
+.contact-option small{display:block;color:#999;margin-top:3px}
+
 </style>
 </head>
 <body>
@@ -211,7 +253,29 @@ section{max-width:1180px;margin:auto;padding:86px 20px} .section-head{display:fl
 <div class="cookie" id="cookie"><h3>Tu privacidad es importante</h3><p>Usamos cookies necesarias para el funcionamiento del sitio y, con tu permiso, contenido externo como Google Maps. Puedes aceptar, rechazar o configurar tus preferencias.</p><div class="cookie-actions"><button class="btn" id="acceptAll">Aceptar</button><button class="btn ghost" id="rejectAll">Rechazar</button><button class="btn ghost" id="configureCookies">Configurar</button></div></div>
 <div class="modal" id="prefsModal" role="dialog" aria-modal="true" aria-labelledby="prefsTitle"><div class="modal-card"><button class="modal-close" data-close="prefsModal" aria-label="Cerrar">×</button><h2 id="prefsTitle">Preferencias de cookies</h2><div class="pref-row"><div><strong>Cookies necesarias</strong><small>Permiten recordar tu elección de privacidad y el funcionamiento básico de la página.</small></div><label class="switch"><input type="checkbox" checked disabled><span class="slider"></span></label></div><div class="pref-row"><div><strong>Contenido externo</strong><small>Permite cargar Google Maps. Al activarlo, Google puede tratar datos técnicos del dispositivo.</small></div><label class="switch"><input id="externalConsent" type="checkbox"><span class="slider"></span></label></div><div class="pref-row"><div><strong>Analítica</strong><small>No hay herramientas de analítica instaladas actualmente. La preferencia queda preparada para el futuro.</small></div><label class="switch"><input id="analyticsConsent" type="checkbox"><span class="slider"></span></label></div><div class="pref-row"><div><strong>Marketing</strong><small>No hay píxeles publicitarios instalados actualmente.</small></div><label class="switch"><input id="marketingConsent" type="checkbox"><span class="slider"></span></label></div><div class="modal-actions"><button class="btn ghost" id="prefsReject">Rechazar opcionales</button><button class="btn" id="savePrefs">Guardar preferencias</button></div></div></div>
 <div class="modal" id="legalModal" role="dialog" aria-modal="true"><div class="modal-card"><button class="modal-close" data-close="legalModal" aria-label="Cerrar">×</button><div id="legalContent"></div></div></div>
+<button class="float-whatsapp" id="contactChoiceBtn" type="button" aria-label="Contactar con Inksomnio Tattoo">☏</button>
 <a class="float-insta" id="floatBtn" href="https://instagram.com/ink_somniotattoo" target="_blank" aria-label="Instagram">◎</a>
+
+<div class="contact-choice" id="contactChoice" aria-hidden="true">
+  <div class="contact-choice-backdrop" id="contactChoiceBackdrop"></div>
+  <div class="contact-choice-card" role="dialog" aria-modal="true" aria-labelledby="contactChoiceTitle">
+    <button class="contact-choice-close" id="contactChoiceClose" type="button" aria-label="Cerrar">×</button>
+    <div class="contact-choice-eyebrow">INKSOMNIO TATTOO</div>
+    <h3 id="contactChoiceTitle">¿Cómo quieres contactar?</h3>
+    <p>Elige una opción para hablar con nosotros.</p>
+    <div class="contact-choice-actions">
+      <a class="contact-option whatsapp" href="https://wa.me/34632742987?text=Hola%20Inksomnio%20Tattoo%2C%20quiero%20informaci%C3%B3n%20sobre%20un%20tatuaje." target="_blank" rel="noopener">
+        <span class="contact-option-icon">☏</span>
+        <span><strong>WhatsApp</strong><small>Escribir por WhatsApp</small></span>
+      </a>
+      <a class="contact-option instagram" href="https://instagram.com/ink_somniotattoo" target="_blank" rel="noopener">
+        <span class="contact-option-icon">◎</span>
+        <span><strong>Instagram</strong><small>Visitar nuestro Instagram</small></span>
+      </a>
+    </div>
+  </div>
+</div>
+
 <div class="lightbox" id="lightbox"><span class="close" id="closeLb">×</span><button class="lb-nav lb-prev" id="lbPrev" aria-label="Anterior">‹</button><img id="lbImg" src="" alt="Trabajo Inksomnio Tattoo"><button class="lb-nav lb-next" id="lbNext" aria-label="Siguiente">›</button></div>
 <script>
 const filters=document.querySelectorAll('.filter'); const cards=[...document.querySelectorAll('.work-card')];
@@ -253,5 +317,17 @@ fb.addEventListener('pointerdown',e=>{dragging=true;moved=false;fb.classList.add
 fb.addEventListener('pointermove',e=>{if(!dragging)return;let dx=e.clientX-sx,dy=e.clientY-sy;if(Math.abs(dx)+Math.abs(dy)>5)moved=true;fb.style.left=Math.min(innerWidth-70,Math.max(8,ox+dx))+'px';fb.style.top=Math.min(innerHeight-70,Math.max(8,oy+dy))+'px';fb.style.right='auto';fb.style.bottom='auto'});
 fb.addEventListener('pointerup',e=>{dragging=false;setTimeout(()=>fb.classList.remove('active'),900); if(moved)e.preventDefault()});
 fb.addEventListener('click',e=>{if(moved){e.preventDefault(); moved=false;}});
+
+const contactChoice=document.getElementById('contactChoice');
+const contactChoiceBtn=document.getElementById('contactChoiceBtn');
+const contactChoiceClose=document.getElementById('contactChoiceClose');
+const contactChoiceBackdrop=document.getElementById('contactChoiceBackdrop');
+function openContactChoice(){contactChoice.classList.add('show');contactChoice.setAttribute('aria-hidden','false');document.body.style.overflow='hidden'}
+function closeContactChoice(){contactChoice.classList.remove('show');contactChoice.setAttribute('aria-hidden','true');document.body.style.overflow=''}
+if(contactChoiceBtn)contactChoiceBtn.addEventListener('click',openContactChoice);
+if(contactChoiceClose)contactChoiceClose.addEventListener('click',closeContactChoice);
+if(contactChoiceBackdrop)contactChoiceBackdrop.addEventListener('click',closeContactChoice);
+document.addEventListener('keydown',e=>{if(e.key==='Escape'&&contactChoice.classList.contains('show'))closeContactChoice()});
+
 </script>
 </body></html>
