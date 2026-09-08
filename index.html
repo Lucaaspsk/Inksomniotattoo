@@ -95,7 +95,7 @@ section{max-width:1180px;margin:auto;padding:86px 20px} .section-head{display:fl
   cursor:pointer;
   appearance:none;
   -webkit-appearance:none;
-  background:linear-gradient(145deg,#171717,#080808);
+  background:linear-gradient(145deg,#171717,#080808);touch-action:none;cursor:grab;user-select:none;-webkit-user-select:none;
   color:#d8a62d;
   border:1px solid rgba(216,166,45,.72);
 }
@@ -344,20 +344,56 @@ privacy:`<h2>Política de privacidad</h2><p><strong>Última actualización:</str
 cookies:`<h2>Política de cookies</h2><p><strong>Última actualización:</strong> 25 de julio de 2026.</p><h3>¿Qué son las cookies?</h3><p>Son pequeños archivos o tecnologías similares que permiten recordar preferencias y facilitar determinadas funciones.</p><h3>Cookies utilizadas</h3><ul><li><strong>Necesarias:</strong> guardan localmente la elección de privacidad para no mostrar el aviso en cada visita.</li><li><strong>Contenido externo:</strong> Google Maps solo se carga si se autoriza. Google puede establecer sus propias cookies o tratar información técnica.</li><li><strong>Analítica y marketing:</strong> no hay herramientas de estas categorías instaladas actualmente.</li></ul><h3>Cambiar o retirar el consentimiento</h3><p>Puedes modificar tu elección en cualquier momento mediante “Configurar cookies” en el pie de página. También puedes eliminar los datos del sitio desde la configuración del navegador.</p>`,
 legal:`<h2>Aviso legal</h2><p><strong>Sitio:</strong> Inksomnio Tattoo.</p><p><strong>Dirección del establecimiento:</strong> Cristóbal Sanz 62, 03201 Elche, Alicante.</p><p><strong>Instagram:</strong> @ink_somniotattoo.</p><h3>Datos pendientes antes de publicar</h3><p>Debe añadirse el nombre o razón social del titular, NIF/CIF, correo electrónico de contacto y, cuando corresponda, datos registrales o profesionales.</p><h3>Condiciones de uso</h3><p>Los contenidos de la web tienen carácter informativo. Las imágenes, diseños, logotipos y textos pertenecen a sus respectivos titulares y no pueden reutilizarse sin autorización.</p><h3>Enlaces externos</h3><p>Inksomnio Tattoo no controla las condiciones ni el contenido de plataformas externas como Instagram o Google Maps.</p>`};
 document.querySelectorAll('[data-legal]').forEach(b=>b.onclick=()=>{document.getElementById('legalContent').innerHTML=legalTexts[b.dataset.legal];legalModal.classList.add('show')});
-const fb=document.getElementById('floatBtn'); let dragging=false, moved=false, sx=0, sy=0, ox=0, oy=0;
-function pos(e){return e.touches?e.touches[0]:e};
-fb.addEventListener('pointerdown',e=>{dragging=true;moved=false;fb.classList.add('active');sx=e.clientX;sy=e.clientY;const r=fb.getBoundingClientRect();ox=r.left;oy=r.top;fb.setPointerCapture(e.pointerId)});
-fb.addEventListener('pointermove',e=>{if(!dragging)return;let dx=e.clientX-sx,dy=e.clientY-sy;if(Math.abs(dx)+Math.abs(dy)>5)moved=true;fb.style.left=Math.min(innerWidth-70,Math.max(8,ox+dx))+'px';fb.style.top=Math.min(innerHeight-70,Math.max(8,oy+dy))+'px';fb.style.right='auto';fb.style.bottom='auto'});
-fb.addEventListener('pointerup',e=>{dragging=false;setTimeout(()=>fb.classList.remove('active'),900); if(moved)e.preventDefault()});
-fb.addEventListener('click',e=>{if(moved){e.preventDefault(); moved=false;}});
-
 const contactChoice=document.getElementById('contactChoice');
 const contactChoiceBtn=document.getElementById('contactChoiceBtn');
 const contactChoiceClose=document.getElementById('contactChoiceClose');
 const contactChoiceBackdrop=document.getElementById('contactChoiceBackdrop');
 function openContactChoice(){contactChoice.classList.add('show');contactChoice.setAttribute('aria-hidden','false');document.body.style.overflow='hidden'}
 function closeContactChoice(){contactChoice.classList.remove('show');contactChoice.setAttribute('aria-hidden','true');document.body.style.overflow=''}
-if(contactChoiceBtn)contactChoiceBtn.addEventListener('click',openContactChoice);
+let contactDragging=false, contactMoved=false, contactStartX=0, contactStartY=0, contactOriginX=0, contactOriginY=0;
+if(contactChoiceBtn){
+  contactChoiceBtn.style.touchAction='none';
+  contactChoiceBtn.addEventListener('pointerdown',e=>{
+    contactDragging=true;
+    contactMoved=false;
+    contactStartX=e.clientX;
+    contactStartY=e.clientY;
+    const r=contactChoiceBtn.getBoundingClientRect();
+    contactOriginX=r.left;
+    contactOriginY=r.top;
+    try{contactChoiceBtn.setPointerCapture(e.pointerId)}catch(_){}
+  });
+  contactChoiceBtn.addEventListener('pointermove',e=>{
+    if(!contactDragging)return;
+    const dx=e.clientX-contactStartX, dy=e.clientY-contactStartY;
+    if(Math.abs(dx)+Math.abs(dy)>6)contactMoved=true;
+    if(contactMoved){
+      const x=Math.min(window.innerWidth-70,Math.max(8,contactOriginX+dx));
+      const y=Math.min(window.innerHeight-70,Math.max(8,contactOriginY+dy));
+      contactChoiceBtn.style.left=x+'px';
+      contactChoiceBtn.style.top=y+'px';
+      contactChoiceBtn.style.right='auto';
+      contactChoiceBtn.style.bottom='auto';
+    }
+  });
+  contactChoiceBtn.addEventListener('pointerup',e=>{
+    contactDragging=false;
+    try{contactChoiceBtn.releasePointerCapture(e.pointerId)}catch(_){}
+    if(contactMoved){
+      e.preventDefault();
+      setTimeout(()=>{contactMoved=false},0);
+    }
+  });
+  contactChoiceBtn.addEventListener('click',e=>{
+    if(contactMoved){
+      e.preventDefault();
+      e.stopPropagation();
+      contactMoved=false;
+      return;
+    }
+    openContactChoice();
+  });
+}
 if(contactChoiceClose)contactChoiceClose.addEventListener('click',closeContactChoice);
 if(contactChoiceBackdrop)contactChoiceBackdrop.addEventListener('click',closeContactChoice);
 document.addEventListener('keydown',e=>{if(e.key==='Escape'&&contactChoice.classList.contains('show'))closeContactChoice()});
