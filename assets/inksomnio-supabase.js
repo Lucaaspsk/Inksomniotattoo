@@ -1,5 +1,5 @@
 (() => {
-  const SUPABASE_URL = 'https://zoilelcgybqxyfabmsqg.supabase.co';
+  const SUPABASE_URL = 'https://zoiielcgybqxyfabmsgq.supabase.co';
   const SUPABASE_KEY = 'sb_publishable_whBX-zUiCj1U17d1uyaIug_VU2z9CzH';
   const MEDIA_API = `${SUPABASE_URL}/rest/v1/media?select=*&active=eq.true&order=sort_order.asc,created_at.asc`;
   const headers = { apikey: SUPABASE_KEY, Authorization: `Bearer ${SUPABASE_KEY}` };
