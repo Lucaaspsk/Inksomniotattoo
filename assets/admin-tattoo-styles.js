@@ -1,6 +1,8 @@
 (() => {
   const KEY = 'inksomnio_custom_tattoo_styles';
   const DEFAULTS = ['general','Realismo','Anime / Color','Fine line','Lettering','Blackwork','Color','Grandes proyectos'];
+  const SUPABASE_URL = 'https://zoiielcgybqxyfabmsgq.supabase.co';
+  const SUPABASE_KEY = 'sb_publishable_whBX-zUiCj1U17d1uyaIug_VU2z9CzH';
   const $ = id => document.getElementById(id);
   const readSaved = () => { try { return JSON.parse(localStorage.getItem(KEY) || '[]').filter(Boolean); } catch { return []; } };
   const save = list => localStorage.setItem(KEY, JSON.stringify([...new Set(list)]));
@@ -17,7 +19,7 @@
     btn.textContent = '+ Añadir nuevo estilo';
     btn.style.marginTop = '9px';
     btn.style.width = '100%';
-    btn.onclick = async () => {
+    btn.onclick = () => {
       const name = esc(prompt('Nombre del nuevo estilo de tatuaje:'));
       if (!name) return;
       const existing = [...select.options].map(o => o.value.toLowerCase());
@@ -25,8 +27,7 @@
         select.value = [...select.options].find(o => o.value.toLowerCase() === name.toLowerCase()).value;
         return;
       }
-      const option = new Option(name, name);
-      select.add(option);
+      select.add(new Option(name, name));
       select.value = name;
       save([...readSaved(), name]);
     };
@@ -34,10 +35,10 @@
   }
 
   async function loadStylesFromMedia() {
-    if (!window.db || !window.$) return;
     const select = $('style');
-    if (!select) return;
-    const { data } = await db.from('media').select('style').eq('category', 'tattoos');
+    if (!select || !window.supabase?.createClient) return;
+    const client = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+    const { data } = await client.from('media').select('style').eq('category', 'tattoos');
     const names = [...DEFAULTS, ...readSaved(), ...(data || []).map(x => x.style).filter(Boolean)];
     const current = select.value;
     const seen = new Set([...select.options].map(o => o.value.toLowerCase()));
@@ -53,7 +54,7 @@
   function start() {
     ensureButton();
     loadStylesFromMedia();
-    const observer = new MutationObserver(() => ensureButton());
+    const observer = new MutationObserver(ensureButton);
     const style = $('style');
     if (style?.parentElement) observer.observe(style.parentElement, { childList: true, subtree: true });
   }
